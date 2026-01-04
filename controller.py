@@ -453,6 +453,20 @@ class SovereignController:
         print("🛡️ Security layer enabled (rate limiting, sanitization, audit)")
         return self.security
     
+    def enable_black_swan(self):
+        """
+        Enable Black Swan Hardening Protocol.
+        - Control Barrier Function (CBF) - Kill on axiom violation
+        - Zero-Trust Capability Tokens
+        - Pressure-Sensitive Throttling to SLM
+        - Self-Healing on test failure
+        """
+        from modules.black_swan import BlackSwanProtocol
+        self.black_swan = BlackSwanProtocol(self)
+        axiom_module = self.get("axiom_bridge")
+        self.black_swan.activate(axiom_module)
+        return self.black_swan
+    
     def enable_tools(self):
         """Enable tool calling with built-in tools"""
         from modules.tool_registry import create_builtin_tools
