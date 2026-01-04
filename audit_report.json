@@ -1,0 +1,138 @@
+{
+  "root_dir": "/Users/lordwilson/sovereign_universal",
+  "timestamp": "2026-01-04T07:21:49.473197",
+  "total_files": 23,
+  "summary": {
+    "sovereign": 0,
+    "ghost": 22,
+    "atmospheric": 1
+  },
+  "sovereign": [],
+  "ghost": [
+    {
+      "path": "/Users/lordwilson/sovereign_universal/tests.py",
+      "score": 100,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/swarm.py",
+      "score": 95,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/controller.py",
+      "score": 95,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/moie.py",
+      "score": 95,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/api_server.py",
+      "score": 95,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/healer.py",
+      "score": 95,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/phoenix.py",
+      "score": 95,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/modules/dspy_axiom.py",
+      "score": 95,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/dashboard/SovereignDashboardApp.swift",
+      "score": 80,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/dashboard/SovereignDashboard.swift",
+      "score": 80,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/unify_stack.py",
+      "score": 75,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/telemetry.py",
+      "score": 75,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/modules/black_swan.py",
+      "score": 75,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/modules/tool_registry.py",
+      "score": 75,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/.axiom_module_golden.py",
+      "score": 70,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/axiom_module.py",
+      "score": 70,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/cli.py",
+      "score": 70,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/chaos_tests.py",
+      "score": 65,
+      "issues": [
+        "Dangerous functions detected"
+      ]
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/resurrection.py",
+      "score": 65,
+      "issues": [
+        "Dangerous functions detected"
+      ]
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/modules/security.py",
+      "score": 60,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/modules/__init__.py",
+      "score": 60,
+      "issues": []
+    },
+    {
+      "path": "/Users/lordwilson/sovereign_universal/modules/organism.py",
+      "score": 45,
+      "issues": [
+        "Dangerous functions detected"
+      ]
+    }
+  ],
+  "atmospheric": [
+    {
+      "path": "/Users/lordwilson/sovereign_universal/auditor.py",
+      "score": 0,
+      "issues": [
+        "Cloud-dependent code detected"
+      ]
+    }
+  ]
+}
