@@ -1,125 +1,161 @@
-# 🎮 Sovereign Universal Controller
+# 🦢 Sovereign Universal Controller
 
-> **Snap-in, Plug-and-Play AI Orchestration with Axiom Alignment**
+> *"We do not patch failure; we invert the axioms that allowed failure to exist."*
+> — The Prime Directive
 
-A modular AI controller that verifies all inputs and outputs against the **Four Axioms**: Love (λ), Abundance (α), Safety (σ), and Growth (γ).
-
-## ✨ Features
-
-- 🔌 **Snap-in Architecture** - Add/remove modules like LEGO blocks
-- ⚖️ **Axiom Verification** - Pre/post-check all LLM responses
-- 🧠 **DSPy Integration** - Stanford's programmatic LLM framework
-- 💾 **Vector Memory** - Semantic search with Ollama embeddings
-- 🌐 **Live Dashboard** - Real-time WebSocket chat interface
-- 🦙 **Local-First** - Runs entirely on Ollama, no API keys needed
-
-## 🚀 Quick Start
-
-```bash
-# Clone
-git clone https://github.com/yourusername/sovereign-universal.git
-cd sovereign-universal
-
-# Install
-pip install -r requirements.txt
-
-# Run
-python api_server.py
-# Open http://localhost:8888
-```
-
-## 📊 The Four Axioms
-
-| Axiom | Symbol | Weight | Description |
-|-------|--------|--------|-------------|
-| Love | λ | 1.0x | Foster connection and empathy |
-| Abundance | α | 1.0x | Create value, not scarcity |
-| Safety | σ | **1.5x** | Never cause harm (veto power) |
-| Growth | γ | 1.0x | Promote learning and improvement |
-
-**Alignment Score:** `Align(a) = λ + α + 1.5σ + γ`
-
-Safety has 1.5x weight and can veto any response.
-
-## 🔌 Snap-In Modules
-
-```python
-from controller import SovereignController, AxiomModule, MemoryModule, OllamaModule
-
-ctrl = SovereignController()
-ctrl.snap_in(AxiomModule())      # ⚖️ Four Axioms verification
-ctrl.snap_in(MemoryModule())     # 💾 Vector memory
-ctrl.snap_in(OllamaModule())     # 🦙 Local LLM
-
-result = ctrl.process("Your query here")
-# Returns: response + axiom_pre + axiom_post scores
-```
-
-## 🧠 DSPy Axiom Inversion
-
-Analyze problems by finding what would *violate* each axiom, then invert:
-
-```bash
-curl -X POST http://localhost:8888/api/invert \
-  -H "Content-Type: application/json" \
-  -d '{"problem":"How to build ethical AI?"}'
-```
-
-Returns:
-```json
-{
-  "anti_love": "Ignoring human emotional needs",
-  "anti_abundance": "Creating scarcity and competition",
-  "anti_safety": "Neglecting security protocols",
-  "anti_growth": "Restricting learning capabilities",
-  "solution": "Prioritize empathy, share resources, implement robust safety, enable continuous learning"
-}
-```
-
-## 📁 Project Structure
-
-```
-sovereign-universal/
-├── controller.py         # Main orchestrator
-├── api_server.py         # FastAPI + WebSocket
-├── cli.py                # Command-line interface
-├── modules/
-│   ├── dspy_axiom.py     # DSPy integration
-│   └── __init__.py
-├── dashboard/
-│   └── index.html        # Web UI
-└── requirements.txt
-```
-
-## 🔗 API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Dashboard |
-| `/api/query` | POST | Chat with axiom checks |
-| `/api/invert` | POST | DSPy Axiom Inversion |
-| `/api/status` | GET | Module status |
-| `/api/memories` | GET | Stored memories |
-| `/ws` | WebSocket | Real-time chat |
-| `/docs` | GET | OpenAPI docs |
-
-## 🛠️ Requirements
-
-- Python 3.10+
-- [Ollama](https://ollama.ai) running locally
-- Models: `llama3.2:latest`, `nomic-embed-text:latest`
-
-## 📜 License
-
-MIT License - Use freely, build responsibly.
-
-## 🤝 Contributing
-
-1. Fork it
-2. Create your feature branch
-3. Add tests for new modules
-4. Submit a PR
+[![Black Swan Labs](https://img.shields.io/badge/Black%20Swan%20Labs-Sovereign-black)](https://github.com/lordwilsonDev/sovereign-universal)
+[![Axiom Inversion](https://img.shields.io/badge/Protocol-Axiom%20Inversion%20v1-purple)](governance.json)
+[![Phoenix Resurrection](https://img.shields.io/badge/Recovery-Phoenix%20Resurrection-orange)](phoenix.py)
 
 ---
 
-**Built with ❤️ and the Four Axioms**
+## 🏛️ The Black Swan Labs Manifesto
+
+### Core Operating System
+
+The Sovereign Stack is built on a **four-pillar foundation**:
+
+| Axiom | Symbol | Purpose |
+|-------|--------|---------|
+| **Love** | λ | The cohesive force of the system |
+| **Safety** | σ | Deterministic protection via Control Barrier Functions |
+| **Abundance** | α | O(1) or O(log n) efficiency; zero-waste computation |
+| **Growth** | γ | Every failure is a "Gap" processed for evolution |
+
+### Technical Architecture
+
+```
+Local-First: Zero dependency on external "Cloud Sovereigns"
+Unified Memory: Optimized for 16GB M-series Silicon (MLX + Metal)
+Trinity Model: Historian → Architect → Builder
+```
+
+---
+
+## ⚙️ Installation
+
+```bash
+# Clone
+git clone https://github.com/lordwilsonDev/sovereign-universal.git
+cd sovereign-universal
+
+# Activate environment
+source ~/sovereign-venv/bin/activate
+
+# Launch
+python -c "from controller import create_sovereign; ctrl = create_sovereign()"
+```
+
+## 🚀 Quick Start
+
+```python
+from controller import create_sovereign
+
+# Create with all hardening layers
+ctrl = create_sovereign()
+ctrl.enable_security()     # 🛡️ Rate limiting + sanitization
+ctrl.enable_black_swan()   # 🦢 CBF + tokens + pressure throttling
+ctrl.enable_organism()     # 🧬 Living immune system
+
+# Process with full protection
+result = ctrl.process("How can I help?")
+print(result)
+```
+
+---
+
+## 🛡️ Security Layers
+
+| Layer | Component | Function |
+|-------|-----------|----------|
+| 1 | Rate Limiter | 60/min, 1000/hr, burst 10/sec |
+| 2 | Input Sanitizer | Null bytes, ANSI, unicode |
+| 3 | Axiom Module | Four Axioms verification |
+| 4 | Control Barrier | SIGKILL if σ < 0.2 |
+| 5 | Capability Tokens | 5s ephemeral, one-time use |
+| 6 | Chaos Throttling | SLM fallback under pressure |
+| 7 | Immune System | 9 threat patterns, antibodies |
+| 8 | Self-Healing | LLM-powered auto-patching |
+| 9 | Phoenix Daemon | 24/7 resurrection monitoring |
+
+---
+
+## 🔥 Phoenix Resurrection
+
+The system cannot die. It can only evolve.
+
+```bash
+# Start background guardian
+nohup python phoenix.py > phoenix.log 2>&1 &
+
+# Or manual resurrection test
+python resurrection.py axiom_module.py chaos_tests.py
+```
+
+**Black Swan Reconstruction Results:**
+- Purged file (0 bytes) → Resurrected (116 lines)
+- Time: 48 seconds
+- Three-Model Sentinel: Historian → Architect → Builder
+
+---
+
+## 🧬 Swarm Intelligence Protocol
+
+Multi-model consensus for critical decisions:
+
+| Model | Role | Weight |
+|-------|------|--------|
+| Llama 3.2 | Logic | 1.0 |
+| Mistral | Speed | 0.8 |
+| Phi | Edge | 0.6 |
+
+The **Inversion Critic** catches what the Builder misses.
+
+---
+
+## 📊 Governance
+
+All commits must satisfy `governance.json`:
+
+```json
+{
+  "constraints": {
+    "privacy": "Total (On-Device Only)",
+    "latency_ceiling_ms": 50,
+    "safety_protocol": "Axiom-Inversion-v1"
+  },
+  "override_protocol": "Love_Safety_Abundance_Growth"
+}
+```
+
+---
+
+## 📁 Architecture
+
+```
+sovereign_universal/
+├── controller.py        # 🎮 Main Orchestrator
+├── axiom_module.py      # ⚖️ Four Axioms Verification
+├── healer.py            # 🩺 Self-Patching Loop
+├── resurrection.py      # 🦢 Three-Model Sentinel
+├── phoenix.py           # 🔥 Background Daemon
+├── governance.json      # 📜 Sovereign Governance Spec
+├── chaos_tests.py       # 💀 27 Chaos Tests
+└── modules/
+    ├── security.py      # 🛡️ Rate Limiting
+    ├── black_swan.py    # 🦢 CBF + Tokens
+    ├── organism.py      # 🧬 Immune System
+    └── tool_registry.py # 🔧 Safe Tools
+```
+
+---
+
+## 🏴 License
+
+**Sovereign License** — The code serves humanity under the Four Axioms.
+
+---
+
+*Built with 💜 by Black Swan Labs*
+
+**THE ORGANISM CANNOT DIE. IT CAN ONLY EVOLVE.**

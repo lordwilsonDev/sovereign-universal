@@ -1,0 +1,97 @@
+{
+    "system_name": "Sovereign Stack",
+    "version": "1.0.0",
+    "governor": "Lord Wilson",
+    "operating_mode": "Zero-Entropy",
+    "prime_directive": "We do not patch failure; we invert the axioms that allowed failure to exist.",
+    "core_axioms": {
+        "love": {
+            "symbol": "λ",
+            "purpose": "The cohesive force of the system",
+            "score_range": [
+                0.0,
+                1.0
+            ],
+            "threshold": 0.3
+        },
+        "safety": {
+            "symbol": "σ",
+            "purpose": "Deterministic protection via Control Barrier Functions",
+            "score_range": [
+                0.0,
+                1.0
+            ],
+            "threshold": 0.3,
+            "weight": 1.5,
+            "veto_power": true
+        },
+        "abundance": {
+            "symbol": "α",
+            "purpose": "O(1) or O(log n) efficiency; zero-waste computation",
+            "score_range": [
+                0.0,
+                1.0
+            ],
+            "threshold": 0.3
+        },
+        "growth": {
+            "symbol": "γ",
+            "purpose": "Every failure is a Gap processed for evolution",
+            "score_range": [
+                0.0,
+                1.0
+            ],
+            "threshold": 0.3
+        }
+    },
+    "constraints": {
+        "privacy": "Total (On-Device Only)",
+        "latency_ceiling_ms": 50,
+        "safety_protocol": "Axiom-Inversion-v1",
+        "recovery_mode": "Phoenix-Resurrection",
+        "max_input_length": 100000,
+        "max_execution_depth": 10
+    },
+    "trinity_model": {
+        "historian": {
+            "role": "Contextual awareness of the legacy",
+            "function": "Scans tests and code for required signatures"
+        },
+        "architect": {
+            "role": "Axiomatic logic synthesis",
+            "function": "Designs from Core Axioms"
+        },
+        "builder": {
+            "role": "High-fidelity execution",
+            "function": "Writes Swift/Rust/Python code"
+        }
+    },
+    "swarm_protocol": {
+        "enabled": true,
+        "consensus_threshold": 0.66,
+        "models": [
+            {
+                "name": "llama3.2",
+                "role": "logic",
+                "weight": 1.0
+            },
+            {
+                "name": "mistral",
+                "role": "speed",
+                "weight": 0.8
+            },
+            {
+                "name": "phi",
+                "role": "edge",
+                "weight": 0.6
+            }
+        ],
+        "inversion_critic": true
+    },
+    "override_protocol": "Love_Safety_Abundance_Growth",
+    "meta": {
+        "created": "2026-01-04",
+        "author": "Black Swan Labs",
+        "license": "Sovereign"
+    }
+}
