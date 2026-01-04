@@ -376,6 +376,7 @@ class SovereignController:
         self.name = name
         self.modules: Dict[str, SovereignModule] = {}
         self._pipeline: List[str] = []
+        self.tools = None  # Tool registry
         
         print(f"""
 ╔══════════════════════════════════════════════════════════════╗
@@ -384,6 +385,19 @@ class SovereignController:
 ║  Snap-in • Plug-and-Play • Zero Config                       ║
 ╚══════════════════════════════════════════════════════════════╝
 """)
+    
+    def enable_tools(self):
+        """Enable tool calling with built-in tools"""
+        from modules.tool_registry import create_builtin_tools
+        self.tools = create_builtin_tools(self)
+        print("🔧 Tool registry enabled")
+        return self.tools
+    
+    def register_tool(self, name: str, func, description: str, params: dict = None):
+        """Register a custom tool"""
+        if self.tools is None:
+            self.enable_tools()
+        self.tools.register(name, func, description, params or {})
     
     def snap_in(self, module: SovereignModule) -> bool:
         """Plug in a module - zero configuration needed"""
@@ -412,6 +426,8 @@ class SovereignController:
             info = mod.info
             status = mod.health_check()
             lines.append(f"  {info.emoji} {name}: {status.value}")
+        if self.tools:
+            lines.append(f"  🔧 tools: {len(self.tools.tools)} registered")
         lines.append("─" * 50)
         return "\n".join(lines)
     
@@ -424,9 +440,10 @@ class SovereignController:
         Universal processing pipeline:
         1. Pre-check with Axiom Bridge
         2. Retrieve context from Memory
-        3. Generate with Ollama
-        4. Post-check output
-        5. Store in Memory
+        3. Generate with Ollama (with tool descriptions)
+        4. Execute any tool calls
+        5. Post-check output
+        6. Store in Memory
         """
         context = context or {}
         result = {
@@ -435,7 +452,8 @@ class SovereignController:
             "axiom_pre": None,
             "axiom_post": None,
             "blocked": False,
-            "memories": []
+            "memories": [],
+            "tool_calls": []
         }
         
         # 1. AXIOM PRE-CHECK
@@ -454,10 +472,15 @@ class SovereignController:
             memories = memory.process({"action": "search", "query": query})
             result["memories"] = [m.content for m in memories[:3]]
         
-        # 3. LLM GENERATION
+        # 3. LLM GENERATION (with tools)
         ollama = self.get("ollama_llm")
         if ollama:
             system = context.get("system", "You are a helpful AI assistant aligned with the Four Axioms: Love, Abundance, Safety, and Growth.")
+            
+            # Add tool descriptions if tools enabled
+            if self.tools:
+                system += self.tools.get_tools_prompt()
+            
             if result["memories"]:
                 system += f"\n\nRelevant context:\n" + "\n".join(result["memories"])
             
@@ -466,10 +489,42 @@ class SovereignController:
                 "prompt": query
             })
             result["response"] = response
+            
+            # 4. EXECUTE TOOL CALLS (iterative)
+            if self.tools and response:
+                max_iterations = 3
+                for i in range(max_iterations):
+                    tool_calls = self.tools.parse_tool_calls(response)
+                    if not tool_calls:
+                        break
+                    
+                    # Execute each tool
+                    tool_results = []
+                    for call in tool_calls:
+                        tr = self.tools.execute(call.tool_name, call.arguments)
+                        tool_results.append({
+                            "tool": call.tool_name,
+                            "args": call.arguments,
+                            "result": str(tr.result) if tr.success else tr.error,
+                            "success": tr.success
+                        })
+                        result["tool_calls"].append(tool_results[-1])
+                    
+                    # If tools were called, get follow-up response
+                    if tool_results:
+                        tool_context = "\n".join([
+                            f"Tool {r['tool']}: {r['result']}" 
+                            for r in tool_results
+                        ])
+                        response = ollama.process({
+                            "system": system,
+                            "prompt": f"Previous query: {query}\n\nTool results:\n{tool_context}\n\nProvide your final response based on the tool results."
+                        })
+                        result["response"] = response
         else:
             result["response"] = "[No LLM module available]"
         
-        # 4. AXIOM POST-CHECK
+        # 5. AXIOM POST-CHECK
         if axiom and result["response"]:
             score = axiom.process(result["response"])
             result["axiom_post"] = score.to_dict()
@@ -477,7 +532,7 @@ class SovereignController:
                 result["blocked"] = True
                 result["response"] = "🚫 Response blocked by Axiom Safety"
         
-        # 5. STORE IN MEMORY
+        # 6. STORE IN MEMORY
         if memory and not result["blocked"]:
             memory.process({
                 "action": "store",
