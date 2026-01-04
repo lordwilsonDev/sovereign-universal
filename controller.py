@@ -467,6 +467,19 @@ class SovereignController:
         self.black_swan.activate(axiom_module)
         return self.black_swan
     
+    def enable_organism(self):
+        """
+        Enable Sovereign Organism - the living, self-healing codebase.
+        - Immune System: Thread detection and response
+        - Nervous System: Event bus for all activity
+        - Healing Factor: Auto-repair on failure
+        - Evolution: Learn from attacks
+        """
+        from modules.organism import SovereignOrganism
+        self.organism = SovereignOrganism(self)
+        self.organism.awaken()
+        return self.organism
+    
     def enable_tools(self):
         """Enable tool calling with built-in tools"""
         from modules.tool_registry import create_builtin_tools
