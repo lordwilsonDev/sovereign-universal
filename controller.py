@@ -212,6 +212,11 @@ class Memory:
 class MemoryModule(SovereignModule):
     """Vector memory with semantic search"""
     
+    # Memory limits to prevent file corruption
+    MAX_MEMORIES = 1000
+    MAX_CONTENT_LENGTH = 10000
+    MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB max index file
+    
     def __init__(self, storage_path: str = "~/.sovereign_memory"):
         super().__init__()
         self.storage_path = Path(storage_path).expanduser()
@@ -243,20 +248,52 @@ class MemoryModule(SovereignModule):
         return self._status
     
     def _load_memories(self):
+        """Load memories with corruption recovery"""
         index_file = self.storage_path / "index.json"
-        if index_file.exists():
+        if not index_file.exists():
+            return
+        
+        # Check file size
+        if index_file.stat().st_size > self.MAX_FILE_SIZE:
+            print(f"⚠️ Memory file too large, creating backup and starting fresh")
+            backup = self.storage_path / f"index.backup.{int(time.time())}.json"
+            index_file.rename(backup)
+            return
+        
+        try:
             data = json.loads(index_file.read_text())
             for mid, m in data.items():
                 self.memories[mid] = Memory(**m)
+        except json.JSONDecodeError as e:
+            print(f"⚠️ Corrupted memory file, creating backup: {e}")
+            backup = self.storage_path / f"index.corrupted.{int(time.time())}.json"
+            index_file.rename(backup)
+            self.memories = {}
+        except Exception as e:
+            print(f"⚠️ Error loading memories: {e}")
+            self.memories = {}
     
     def _save_memories(self):
+        """Save memories with size limit enforcement"""
+        # Prune if too many memories
+        if len(self.memories) > self.MAX_MEMORIES:
+            # Keep most recent
+            sorted_mems = sorted(self.memories.items(), key=lambda x: x[1].timestamp, reverse=True)
+            self.memories = dict(sorted_mems[:self.MAX_MEMORIES])
+        
         index_file = self.storage_path / "index.json"
         data = {mid: {
-            "id": m.id, "content": m.content, 
-            "embedding": m.embedding, "axiom_score": m.axiom_score,
+            "id": m.id, 
+            "content": m.content[:self.MAX_CONTENT_LENGTH],  # Truncate content
+            "embedding": m.embedding, 
+            "axiom_score": m.axiom_score,
             "timestamp": m.timestamp
         } for mid, m in self.memories.items()}
-        index_file.write_text(json.dumps(data, indent=2))
+        
+        try:
+            index_file.write_text(json.dumps(data, indent=2))
+        except Exception as e:
+            print(f"⚠️ Error saving memories: {e}")
     
     def embed(self, text: str) -> List[float]:
         """Get embedding from Ollama"""
@@ -399,6 +436,7 @@ class SovereignController:
         self.modules: Dict[str, SovereignModule] = {}
         self._pipeline: List[str] = []
         self.tools = None  # Tool registry
+        self.security = None  # Security layer
         
         print(f"""
 ╔══════════════════════════════════════════════════════════════╗
@@ -407,6 +445,13 @@ class SovereignController:
 ║  Snap-in • Plug-and-Play • Zero Config                       ║
 ╚══════════════════════════════════════════════════════════════╝
 """)
+    
+    def enable_security(self):
+        """Enable security layer with rate limiting, sanitization, timeouts"""
+        from modules.security import SecurityLayer
+        self.security = SecurityLayer()
+        print("🛡️ Security layer enabled (rate limiting, sanitization, audit)")
+        return self.security
     
     def enable_tools(self):
         """Enable tool calling with built-in tools"""
@@ -457,9 +502,10 @@ class SovereignController:
         """Get a module by name"""
         return self.modules.get(module_name)
     
-    def process(self, query: str, context: dict = None) -> dict:
+    def process(self, query: str, context: dict = None, client_id: str = "default") -> dict:
         """
         Universal processing pipeline:
+        0. Security check (rate limit, sanitize)
         1. Pre-check with Axiom Bridge
         2. Retrieve context from Memory
         3. Generate with Ollama (with tool descriptions)
@@ -475,8 +521,19 @@ class SovereignController:
             "axiom_post": None,
             "blocked": False,
             "memories": [],
-            "tool_calls": []
+            "tool_calls": [],
+            "security": None
         }
+        
+        # 0. SECURITY CHECK
+        if self.security:
+            allowed, sanitized_query, reason = self.security.check_request(query, client_id)
+            result["security"] = {"allowed": allowed, "reason": reason}
+            if not allowed:
+                result["blocked"] = True
+                result["response"] = f"🛡️ Request blocked: {reason}"
+                return result
+            query = sanitized_query  # Use sanitized query
         
         # 1. AXIOM PRE-CHECK
         axiom = self.get("axiom_bridge")
