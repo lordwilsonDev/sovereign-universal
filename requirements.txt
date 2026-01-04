@@ -1,0 +1,6 @@
+# Sovereign Universal Controller
+# Minimal dependencies for plug-and-play operation
+
+httpx>=0.24.0
+fastapi>=0.100.0
+uvicorn>=0.23.0

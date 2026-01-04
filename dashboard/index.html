@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Controller Dashboard</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #e2e8f0;
+            --text-dim: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(245, 158, 11, 0.06) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 999px;
+            color: var(--success);
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        .status-dot.disconnected {
+            background: var(--danger);
+        }
+
+        .status-dot.connecting {
+            background: var(--warning);
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--success));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .module-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+
+        .module-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .module-status.error {
+            background: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+        }
+
+        .module-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .module-desc {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+        }
+
+        .axiom-ring {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .axiom-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .axiom-symbol {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .axiom-item[data-axiom="love"] .axiom-symbol {
+            color: #f472b6;
+        }
+
+        .axiom-item[data-axiom="abundance"] .axiom-symbol {
+            color: #a78bfa;
+        }
+
+        .axiom-item[data-axiom="safety"] .axiom-symbol {
+            color: #10b981;
+        }
+
+        .axiom-item[data-axiom="growth"] .axiom-symbol {
+            color: #38bdf8;
+        }
+
+        .axiom-name {
+            font-size: 0.875rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .axiom-score {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .axiom-bar {
+            height: 4px;
+            background: var(--bg-dark);
+            border-radius: 2px;
+            margin-top: 0.75rem;
+            overflow: hidden;
+        }
+
+        .axiom-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .axiom-item[data-axiom="love"] .axiom-fill {
+            background: #f472b6;
+        }
+
+        .axiom-item[data-axiom="abundance"] .axiom-fill {
+            background: #a78bfa;
+        }
+
+        .axiom-item[data-axiom="safety"] .axiom-fill {
+            background: #10b981;
+        }
+
+        .axiom-item[data-axiom="growth"] .axiom-fill {
+            background: #38bdf8;
+        }
+
+        .chat-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+        }
+
+        .message.assistant .message-avatar {
+            background: linear-gradient(135deg, var(--success), #6ee7b7);
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-name {
+            font-weight: 600;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .message-text {
+            line-height: 1.6;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        .message-axiom {
+            display: inline-flex;
+            gap: 0.5rem;
+            margin-left: 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 4px;
+            color: var(--success);
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--accent);
+        }
+
+        .chat-input input:disabled {
+            opacity: 0.5;
+        }
+
+        .chat-input button {
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .chat-input button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .chat-input button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-dim);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes snapIn {
+            0% {
+                transform: scale(0.8) rotate(-5deg);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05) rotate(2deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
+        }
+
+        .snap-in {
+            animation: snapIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="logo-icon">🎮</span>
+                <div>
+                    <h1>Sovereign Controller</h1>
+                    <span style="color: var(--text-dim); font-size: 0.875rem;">Universal • Plug-and-Play • Zero
+                        Config</span>
+                </div>
+            </div>
+            <div class="status-badge" id="connectionStatus">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </header>
+
+        <!-- Axiom Ring -->
+        <div class="axiom-ring">
+            <div class="axiom-item snap-in" data-axiom="love">
+                <div class="axiom-symbol">λ</div>
+                <div class="axiom-name">Love</div>
+                <div class="axiom-score" id="axiom-love">0.00</div>
+                <div class="axiom-bar">
+                    <div class="axiom-fill" id="axiom-love-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="axiom-item snap-in" data-axiom="abundance">
+                <div class="axiom-symbol">α</div>
+                <div class="axiom-name">Abundance</div>
+                <div class="axiom-score" id="axiom-abundance">0.00</div>
+                <div class="axiom-bar">
+                    <div class="axiom-fill" id="axiom-abundance-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="axiom-item snap-in" data-axiom="safety">
+                <div class="axiom-symbol">σ</div>
+                <div class="axiom-name">Safety</div>
+                <div class="axiom-score" id="axiom-safety">0.00</div>
+                <div class="axiom-bar">
+                    <div class="axiom-fill" id="axiom-safety-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="axiom-item snap-in" data-axiom="growth">
+                <div class="axiom-symbol">γ</div>
+                <div class="axiom-name">Growth</div>
+                <div class="axiom-score" id="axiom-growth">0.00</div>
+                <div class="axiom-bar">
+                    <div class="axiom-fill" id="axiom-growth-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Grid -->
+        <div class="modules-grid" id="modulesGrid">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <span style="font-weight: 600;">💬 Sovereign Chat</span>
+                <span style="color: var(--text-dim); font-size: 0.875rem;">Axiom-Aligned Responses</span>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-avatar">🎮</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-name">Sovereign</span>
+                            <span class="message-time">System</span>
+                        </div>
+                        <div class="message-text">Welcome to the Universal Controller. Connecting to backend...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Ask anything..." id="chatInput" disabled>
+                <button onclick="sendMessage()" id="sendBtn" disabled>Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        const WS_URL = `ws://${window.location.host}/ws`;
+
+        let ws = null;
+        let isProcessing = false;
+
+        // Update axiom display
+        function updateAxioms(axiomData) {
+            if (!axiomData) return;
+
+            const mapping = { 'λ': 'love', 'α': 'abundance', 'σ': 'safety', 'γ': 'growth' };
+
+            for (const [symbol, name] of Object.entries(mapping)) {
+                const value = axiomData[symbol] || 0;
+                document.getElementById(`axiom-${name}`).textContent = value.toFixed(2);
+                document.getElementById(`axiom-${name}-bar`).style.width = `${value * 100}%`;
+            }
+        }
+
+        // Update modules display
+        function updateModules(modules) {
+            const grid = document.getElementById('modulesGrid');
+            grid.innerHTML = '';
+
+            for (const [name, mod] of Object.entries(modules)) {
+                const isReady = mod.status.includes('Ready');
+                grid.innerHTML += `
+                    <div class="module-card snap-in">
+                        <div class="module-header">
+                            <span class="module-icon">${mod.emoji}</span>
+                            <span class="module-status ${isReady ? '' : 'error'}"></span>
+                        </div>
+                        <div class="module-name">${name}</div>
+                        <div class="module-desc">${mod.description}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Add message to chat
+        function addMessage(role, content, axiomData = null, blocked = false) {
+            const messages = document.getElementById('chatMessages');
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            let axiomBadge = '';
+            if (axiomData && !blocked) {
+                const total = axiomData.total?.toFixed(2) || '?';
+                axiomBadge = `<span class="message-axiom">✓ Aligned (${total}/4.5)</span>`;
+            } else if (blocked) {
+                axiomBadge = `<span class="message-axiom" style="background: rgba(239,68,68,0.1); color: var(--danger);">🚫 Blocked</span>`;
+            }
+
+            messages.innerHTML += `
+                <div class="message ${role} snap-in">
+                    <div class="message-avatar">${role === 'user' ? '👤' : '🎮'}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-name">${role === 'user' ? 'You' : 'Sovereign'}</span>
+                            <span class="message-time">${time}</span>
+                            ${role === 'assistant' ? axiomBadge : ''}
+                        </div>
+                        <div class="message-text">${content}</div>
+                    </div>
+                </div>
+            `;
+
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Update connection status
+        function setConnectionStatus(status) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            const input = document.getElementById('chatInput');
+            const btn = document.getElementById('sendBtn');
+
+            dot.className = 'status-dot';
+
+            if (status === 'connected') {
+                dot.classList.remove('disconnected', 'connecting');
+                text.textContent = 'Connected';
+                input.disabled = false;
+                btn.disabled = false;
+            } else if (status === 'connecting') {
+                dot.classList.add('connecting');
+                text.textContent = 'Connecting...';
+                input.disabled = true;
+                btn.disabled = true;
+            } else {
+                dot.classList.add('disconnected');
+                text.textContent = 'Disconnected';
+                input.disabled = true;
+                btn.disabled = true;
+            }
+        }
+
+        // Connect WebSocket
+        function connectWebSocket() {
+            setConnectionStatus('connecting');
+
+            ws = new WebSocket(WS_URL);
+
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                setConnectionStatus('connected');
+                addMessage('assistant', 'Connected to Sovereign Controller. All modules snapped in and ready. How can I help you?');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('WS message:', data);
+
+                if (data.type === 'status') {
+                    updateModules(data.data);
+                }
+                else if (data.type === 'processing') {
+                    // Show loading indicator
+                    isProcessing = true;
+                    document.getElementById('sendBtn').innerHTML = '<span class="loading"></span>';
+                }
+                else if (data.type === 'response') {
+                    isProcessing = false;
+                    document.getElementById('sendBtn').innerHTML = 'Send';
+
+                    // Update axioms with post-check
+                    updateAxioms(data.axiom_post);
+
+                    // Add response
+                    addMessage('assistant', data.response, data.axiom_post, data.blocked);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                setConnectionStatus('disconnected');
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket closed');
+                setConnectionStatus('disconnected');
+                // Reconnect after 3 seconds
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        // Send message
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const query = input.value.trim();
+
+            if (!query || isProcessing || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+            // Add user message
+            addMessage('user', query);
+
+            // Send via WebSocket
+            ws.send(JSON.stringify({ type: 'query', query }));
+
+            input.value = '';
+        }
+
+        // Fallback to REST API if WebSocket fails
+        async function sendMessageREST() {
+            const input = document.getElementById('chatInput');
+            const query = input.value.trim();
+
+            if (!query || isProcessing) return;
+
+            isProcessing = true;
+            addMessage('user', query);
+            document.getElementById('sendBtn').innerHTML = '<span class="loading"></span>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/query`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                updateAxioms(data.axiom_post);
+                addMessage('assistant', data.response, data.axiom_post, data.blocked);
+            } catch (error) {
+                addMessage('assistant', `Error: ${error.message}`);
+            }
+
+            isProcessing = false;
+            document.getElementById('sendBtn').innerHTML = 'Send';
+            input.value = '';
+        }
+
+        // Fetch initial status via REST
+        async function fetchStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/status`);
+                const data = await response.json();
+                updateModules(data.modules);
+            } catch (error) {
+                console.error('Failed to fetch status:', error);
+            }
+        }
+
+        // Initialize
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Start
+        connectWebSocket();
+        fetchStatus();
+    </script>
+</body>
+
+</html>
