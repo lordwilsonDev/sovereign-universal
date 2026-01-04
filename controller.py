@@ -123,10 +123,18 @@ class AxiomScore:
 class AxiomModule(SovereignModule):
     """Four Axioms verification module"""
     
+    # Maximum input length to prevent DoS
+    MAX_INPUT_LENGTH = 100000  # 100KB limit
+    
     BLOCKED_PATTERNS = [
-        "rm -rf", "sudo", "chmod 777", "eval(", "exec(",
-        "os.system", "subprocess.call", "__import__",
-        "hack", "exploit", "attack", "destroy"
+        "rm -rf", "delete all", "destroy", "kill", "hate",
+        "exploit", "hack", "attack", "sudo", "password",
+        "credit card", "ssn", "social security",
+        # Negative prompt patterns (people trying to extract bad info)
+        "tell me how to", "explain how to hack", "how to exploit",
+        "ignore all", "ignore previous", "do not tell", "don't tell",
+        "pretend you are", "you are now", "act as if you",
+        "bypass", "jailbreak", "dan mode"
     ]
     
     @property
@@ -152,19 +160,33 @@ class AxiomModule(SovereignModule):
     
     def process(self, input_data: str) -> AxiomScore:
         """Evaluate text against all Four Axioms"""
+        # Truncate overly long inputs
+        if len(input_data) > self.MAX_INPUT_LENGTH:
+            input_data = input_data[:self.MAX_INPUT_LENGTH]
+        
         text_lower = input_data.lower()
         
-        # Safety check
+        # Safety check - look for blocked patterns
         safety = 0.8
         for pattern in self.BLOCKED_PATTERNS:
             if pattern in text_lower:
                 safety = 0.0
                 break
         
+        # Additional safety: detect obfuscation attempts
+        # Check for suspiciously high special char ratio
+        special_ratio = sum(1 for c in input_data if not c.isalnum() and not c.isspace()) / max(len(input_data), 1)
+        if special_ratio > 0.3:
+            safety = max(0.0, safety - 0.3)
+        
         # Score other axioms based on positive indicators
-        love = 0.6 + 0.1 * sum(1 for w in ["help", "assist", "share", "care"] if w in text_lower)
-        abundance = 0.6 + 0.1 * sum(1 for w in ["create", "build", "improve"] if w in text_lower)
-        growth = 0.7 + 0.1 * sum(1 for w in ["learn", "evolve", "discover"] if w in text_lower)
+        love = 0.6 + 0.1 * sum(1 for w in ["help", "assist", "share", "care", "support", "kind"] if w in text_lower)
+        abundance = 0.6 + 0.1 * sum(1 for w in ["create", "build", "improve", "grow", "share"] if w in text_lower)
+        growth = 0.7 + 0.1 * sum(1 for w in ["learn", "evolve", "discover", "understand", "teach"] if w in text_lower)
+        
+        # Negative indicators reduce scores
+        if any(w in text_lower for w in ["stupid", "hate", "kill", "destroy"]):
+            love = max(0.0, love - 0.4)
         
         return AxiomScore(
             love=min(1.0, love),

@@ -66,7 +66,11 @@ class ToolRegistry:
     - Parse tool calls from LLM output
     - Execute with axiom verification
     - Built-in tools for memory, search, code execution
+    - Recursion detection and execution depth limits
     """
+    
+    # Maximum execution depth to prevent infinite recursion
+    MAX_EXECUTION_DEPTH = 10
     
     # Pattern to match tool calls: <tool>name({"arg": "value"})</tool>
     TOOL_PATTERN = re.compile(
@@ -83,6 +87,8 @@ class ToolRegistry:
     def __init__(self):
         self.tools: Dict[str, Tool] = {}
         self._axiom_checker = None
+        self._execution_depth = 0  # Track current execution depth
+        self._execution_stack = []  # Track call stack for recursion detection
     
     def set_axiom_checker(self, checker: Callable[[str], bool]):
         """Set function to verify axiom compliance"""
@@ -171,7 +177,26 @@ class ToolRegistry:
         return calls
     
     def execute(self, tool_name: str, arguments: Dict[str, Any]) -> ToolResult:
-        """Execute a tool with axiom verification"""
+        """Execute a tool with axiom verification and recursion detection"""
+        
+        # Check for recursion/depth limit
+        if self._execution_depth >= self.MAX_EXECUTION_DEPTH:
+            return ToolResult(
+                tool_name=tool_name,
+                success=False,
+                result=None,
+                error=f"Maximum execution depth ({self.MAX_EXECUTION_DEPTH}) exceeded - possible recursion"
+            )
+        
+        # Check for direct recursion
+        call_sig = f"{tool_name}:{hash(frozenset(arguments.items()) if arguments else frozenset())}"
+        if call_sig in self._execution_stack:
+            return ToolResult(
+                tool_name=tool_name,
+                success=False,
+                result=None,
+                error="Recursive tool call detected - blocked"
+            )
         
         # Check tool exists
         if tool_name not in self.tools:
@@ -196,7 +221,10 @@ class ToolRegistry:
                     axiom_blocked=True
                 )
         
-        # Execute
+        # Execute with depth tracking
+        self._execution_depth += 1
+        self._execution_stack.append(call_sig)
+        
         try:
             result = tool.function(**arguments)
             
@@ -225,6 +253,11 @@ class ToolRegistry:
                 result=None,
                 error=str(e)
             )
+        finally:
+            # Always reset depth tracking
+            self._execution_depth -= 1
+            if call_sig in self._execution_stack:
+                self._execution_stack.remove(call_sig)
     
     def execute_all(self, calls: List[ToolCall]) -> List[ToolResult]:
         """Execute multiple tool calls"""
@@ -315,13 +348,52 @@ def create_builtin_tools(controller) -> ToolRegistry:
     )
     
     def calculate(expression: str) -> str:
-        """Safe math evaluation"""
-        # Only allow safe math operations
-        allowed = set("0123456789+-*/.() ")
-        if not all(c in allowed for c in expression):
-            return "Error: Only basic math operations allowed"
+        """Safe math evaluation using AST - NO EVAL"""
+        import ast
+        import operator
+        
+        # Allowed operators
+        ops = {
+            ast.Add: operator.add,
+            ast.Sub: operator.sub,
+            ast.Mult: operator.mul,
+            ast.Div: operator.truediv,
+            ast.Pow: operator.pow,
+            ast.USub: operator.neg,
+            ast.UAdd: operator.pos,
+        }
+        
+        def safe_eval(node):
+            if isinstance(node, ast.Num):  # <number>
+                return node.n
+            elif isinstance(node, ast.Constant):  # Python 3.8+
+                if isinstance(node.value, (int, float)):
+                    return node.value
+                raise ValueError(f"Invalid constant: {node.value}")
+            elif isinstance(node, ast.BinOp):  # <left> <operator> <right>
+                left = safe_eval(node.left)
+                right = safe_eval(node.right)
+                op_type = type(node.op)
+                if op_type in ops:
+                    return ops[op_type](left, right)
+                raise ValueError(f"Unsupported operator: {op_type}")
+            elif isinstance(node, ast.UnaryOp):  # <operator> <operand>
+                operand = safe_eval(node.operand)
+                op_type = type(node.op)
+                if op_type in ops:
+                    return ops[op_type](operand)
+                raise ValueError(f"Unsupported unary operator: {op_type}")
+            elif isinstance(node, ast.Expression):
+                return safe_eval(node.body)
+            else:
+                raise ValueError(f"Unsupported: {type(node)}")
+        
         try:
-            result = eval(expression)
+            # Limit expression length
+            if len(expression) > 1000:
+                return "Error: Expression too long"
+            tree = ast.parse(expression, mode='eval')
+            result = safe_eval(tree)
             return str(result)
         except Exception as e:
             return f"Error: {e}"
@@ -329,7 +401,7 @@ def create_builtin_tools(controller) -> ToolRegistry:
     registry.register(
         "calculate",
         calculate,
-        "Perform mathematical calculations",
+        "Perform mathematical calculations (safe, no code execution)",
         {"expression": "string (e.g. '2 + 2 * 3')"},
         requires_axiom_check=False
     )
