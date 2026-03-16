@@ -23,7 +23,7 @@ steps:
       - '--image'
       - 'gcr.io/$PROJECT_ID/sovereign-api-server:latest'
       - '--region'
-      - 'northamerica-northeast1'
+      - 'us-central1'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'

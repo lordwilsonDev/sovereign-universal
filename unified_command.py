@@ -1,8 +1,8 @@
-from core.sovereign_meta import SovereignDefense, CulturalContextEngine
-from core.predator_fuel import PredatorFuel
-from core.quantum_ai_orchestrator import QuantumAIOrchestrator
 from core.bitnet_engine import BitNetEngine
 from core.context7_memory import Context7Memory
+from core.agent_handoff import HandoffProtocol
+from core.verifier_agent import VerifierAgent
+from core.structured_logger import StructuredLogger
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -10,8 +10,11 @@ class UnifiedSovereignCLI:
         self.ce = CulturalContextEngine()
         self.pf = PredatorFuel()
         self.qai = QuantumAIOrchestrator()
-        self.bitnet = BitNetEngine(self.qai) # Using QAI as mock model bridge
+        self.bitnet = BitNetEngine(self.qai)
         self.memory = Context7Memory()
+        self.swarm = HandoffProtocol()
+        self.verifier = VerifierAgent()
+        self.logger = StructuredLogger()
 
     def run(self):
         print("\n" + "💎"*20)
