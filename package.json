@@ -1,0 +1,63 @@
+{
+  "name": "business-command-center",
+  "version": "2.1.0",
+  "description": "Enterprise Business Social Command Center with Hunyuan AI Models",
+  "main": "api/server.js",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node api/server.js",
+    "client": "cd client && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd client && npm run build",
+    "test": "jest",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "models:setup": "chmod +x scripts/setup-models.sh && ./scripts/setup-models.sh",
+    "health:check": "curl -f http://localhost:3001/api/health || exit 1",
+    "install:all": "npm install && cd client && npm install"
+  },
+  "keywords": [
+    "ai",
+    "business",
+    "social-media",
+    "content-generation",
+    "review-management",
+    "hunyuan",
+    "enterprise"
+  ],
+  "author": "Business Command Center Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "axios": "^1.6.0",
+    "concurrently": "^8.2.0",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.5",
+    "winston": "^3.11.0",
+    "joi": "^17.11.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "nodemon": "^3.0.1",
+    "@types/express": "^4.17.21"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/business-command-center.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/business-command-center/issues"
+  },
+  "homepage": "https://github.com/your-username/business-command-center#readme"
+}
