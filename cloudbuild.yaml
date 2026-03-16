@@ -1,7 +1,7 @@
 steps:
   # 1. Build the Qwen Sovereign Core Image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/sovereign-qwen-core:latest', './api/models/qwen-server']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/sovereign-qwen-core:latest', '-f', './api/models/qwen-server/Dockerfile', '.']
 
   # 2. Build the Unified Hub Server Image
   - name: 'gcr.io/cloud-builders/docker'
