@@ -22,6 +22,7 @@ from core.forge_builder import ForgeBuilderAgent
 from core.redundancy_layer import RedundancyLayer
 from agents.freight_agent import FreightIntelligenceAgent
 from core.sentinel_monitor import SentinelMonitor
+from core.jarvis_bridge import JarvisBridge
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -52,6 +53,7 @@ class UnifiedSovereignCLI:
         self.redundancy = RedundancyLayer()
         self.freight = FreightIntelligenceAgent(self.did.did)
         self.sentinel = SentinelMonitor()
+        self.jarvis = JarvisBridge()
 
     def run(self):
         print("\n" + "💎"*20)
@@ -178,6 +180,15 @@ class UnifiedSovereignCLI:
                 print(f"  Identity: {id_res['status']} | {id_res.get('reason', id_res.get('signature'))}")
                 burn_res = self.sentinel.audit_resource_burn({"redis_usage": 0.45, "nats_lag": 15})
                 print(f"  Resource Burn: {burn_res['status']} | Action: {burn_res['action']}")
+            elif cmd == "jarvis --start":
+                self.jarvis.start_hub()
+                self.jarvis.start_daemon()
+            elif cmd == "jarvis --status":
+                status = self.jarvis.get_status()
+                print(f"\n🍎 JARVIS M1 STATUS")
+                print(f"  Mode: {status['mode']} | VDR Score: {status['vdr_score']}")
+                print(f"  Performance: {int(status['task_completion']*100)}% Success Rate")
+                print(f"  Safety: {status['subsystems']['PANOPTICON']}")
             elif cmd == "status":
                 print("🧠 Engine: BitNet + Qwen2.5-3B (1-bit Optimized)")
                 print("🛠️  Meta-Agent: Forge Intelligence Builder")

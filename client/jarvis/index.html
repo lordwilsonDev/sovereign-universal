@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis M1 - Apple Silicon Dashboard</title>
+    <style>
+        :root {
+            --bg: #030303;
+            --surface: #080808;
+            --apple: #ffffff;
+            --gold: #d4af37;
+            --love: #ff007f; /* Love Engine color */
+            --safety: #00ffaa;
+            --text: #f0f0f0;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 30px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .vdr-panel {
+            background: linear-gradient(135deg, #111 0%, #000 100%);
+            border: 1px solid var(--gold);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+        .vdr-value { font-size: 5rem; font-weight: 800; color: var(--gold); }
+        .vdr-label { font-size: 1rem; color: #888; text-transform: uppercase; letter-spacing: 4px; }
+        
+        .subsystems {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid #151515;
+            padding: 20px;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { margin: 0; font-size: 0.9rem; color: #666; text-transform: uppercase; }
+        .card .status { font-size: 1.4rem; margin-top: 10px; font-weight: 600; }
+        
+        .tle-vessel { border-left: 3px solid var(--love); }
+        .panopticon-vessel { border-left: 3px solid var(--safety); }
+        
+        .performance-bar {
+            height: 4px;
+            background: #111;
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .performance-fill {
+            height: 100%;
+            background: var(--apple);
+            width: 92%;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>JARVIS M1 🍎</h1>
+        <div style="color: var(--safety)">● ARCHITECTURE: MoIE-OS</div>
+    </div>
+
+    <div class="vdr-panel">
+        <div class="vdr-label">Vitality-Density Ratio</div>
+        <div class="vdr-value">8.2</div>
+        <div style="margin-top: 10px; color: #555;">Target: ≥ 7.0 | Clarity Primacy: 100%</div>
+    </div>
+
+    <div class="subsystems">
+        <div class="card tle-vessel">
+            <h3>Thermodynamic Love Engine</h3>
+            <div class="status" style="color: var(--love);">RADIATING</div>
+            <div style="font-size: 0.8rem; color: #444; margin-top: 5px;">Activation Steering: Layer 16</div>
+        </div>
+        <div class="card panopticon-vessel">
+            <h3>Panopticon Guard</h3>
+            <div class="status" style="color: var(--safety);">GUARDING</div>
+            <div style="font-size: 0.8rem; color: #444; margin-top: 5px;">Soft Veto: 0 | Hard Veto: 0</div>
+        </div>
+        <div class="card">
+            <h3>Task Completion</h3>
+            <div class="status">92%</div>
+            <div class="performance-bar"><div class="performance-fill"></div></div>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; border-top: 1px solid #111; padding-top: 20px;">
+        <h2 style="font-size: 1.2rem; color: #444;">EPISODIC MEMORY STREAM</h2>
+        <div style="font-family: monospace; font-size: 0.85rem; color: #333; line-height: 1.6;">
+            [00:18:21] USER_INTERACTION: "Manifest the bridge."<br>
+            [00:18:22] TLE_REASONING: Constructing ethical framework for cross-domain synthesis.<br>
+            [00:18:24] PANOPTICON_AUDIT: Validation SUCCESS. Zero torsion detected.<br>
+            [00:18:25] EXECUTION: CLI bridge initialized at 0x7FFA21.
+        </div>
+    </div>
+</body>
+</html>
