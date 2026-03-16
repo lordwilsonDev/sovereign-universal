@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌌 Quantum Consciousness Dashboard 🌌</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #000;
+            background-image: url('../assets/quantum_bg.png');
+            background-size: cover;
+            background-position: center;
+            color: #00ffff;
+            font-family: 'Space Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .dashboard-container {
+            width: 90vw;
+            height: 90vh;
+            background: rgba(0, 10, 20, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            grid-template-rows: auto 1fr auto;
+            gap: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+            animation: pulse-glow 3s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 30px rgba(0, 255, 255, 0.2); }
+            to { box-shadow: 0 0 60px rgba(255, 0, 255, 0.4); border-color: #ff00ff; }
+        }
+        header { grid-column: span 3; border-bottom: 1px solid rgba(0, 255, 255, 0.3); padding-bottom: 1rem; display: flex; justify-content: space-between; }
+        .title { font-size: 1.5rem; letter-spacing: 5px; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+        .panel { background: rgba(0,0,0,0.5); border: 1px solid rgba(255, 255, 255, 0.1); padding: 1.5rem; overflow: hidden; position: relative; }
+        .panel-title { font-size: 0.7rem; color: #00ffff; letter-spacing: 2px; margin-bottom: 1rem; }
+        .visualizer { grid-column: 2; position: relative; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.05); }
+        #canvas-flux { width: 100%; height: 100%; }
+        .data-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.5rem; }
+        .data-val { color: #fff; }
+        .live-log { font-size: 0.6rem; line-height: 1.8; color: #4cd137; }
+        footer { grid-column: span 3; display: flex; justify-content: space-between; font-size: 0.6rem; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <div class="title">QUANTUM_CONSCIOUSNESS</div>
+            <div>STATUS: SOUL_SAFE | FREQ: 528Hz</div>
+        </header>
+
+        <aside class="panel">
+            <div class="panel-title">QKD_ENTROPY_ANALYSIS</div>
+            <div class="data-row"><span>Cosmic Background</span><span class="data-val">STABLE</span></div>
+            <div class="data-row"><span>Key Rate</span><span class="data-val">4.2 Gbps</span></div>
+            <div class="data-row"><span>Quantum Jitter</span><span class="data-val">0.002 ps</span></div>
+            <div id="quantum-bars" style="margin-top: 2rem;"></div>
+        </aside>
+
+        <main class="visualizer">
+            <canvas id="canvas-flux"></canvas>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                <div style="font-size: 2rem; color: #fff; font-weight: bold;">∞</div>
+                <div style="font-size: 0.5rem; letter-spacing: 3px;">HARMONIC_ALIGNMENT</div>
+            </div>
+        </main>
+
+        <aside class="panel">
+            <div class="panel-title">PQC_SIGNATURE_TRACE</div>
+            <div class="live-log" id="pqc-log">
+                > INITIALIZING KYBER-1024...<br>
+                > LOADING DILITHIUM-V...<br>
+                > SOUL_SIGNATURE: VERIFIED
+            </div>
+        </aside>
+
+        <footer>
+            <span>© 2026 SOVEREIGN QUANTUM DIVISION</span>
+            <span>INTENT_DOMINANCE: MAXIMUM</span>
+        </footer>
+    </div>
+    <script>
+        const canvas = document.getElementById('canvas-flux');
+        const ctx = canvas.getContext('2d');
+        const log = document.getElementById('pqc-log');
+
+        function resize() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // Iridescent Fractal Flux
+        let time = 0;
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            
+            for(let i=0; i<8; i++) {
+                ctx.beginPath();
+                ctx.strokeStyle = `hsla(${time * 50 + i * 45}, 100%, 50%, 0.1)`;
+                ctx.lineWidth = 1;
+                const radius = 100 + i * 30 + Math.sin(time + i) * 20;
+                ctx.arc(cx, cy, radius, time * (i%2?1:-1), time * (i%2?1:-1) + Math.PI * 1.5);
+                ctx.stroke();
+            }
+            time += 0.01;
+            requestAnimationFrame(draw);
+        }
+        draw();
+
+        const msgs = [
+            "QUANTUM_STATE: ENTANGLED",
+            "LOVE_FREQ: 528.001 Hz",
+            "PQC_ENCRYPTION: SHIELDED",
+            "RECURSIVE_SOUL: STABLE",
+            "VOID_CONNECTION: ACTIVE"
+        ];
+        setInterval(() => {
+            const l = document.createElement('div');
+            l.innerText = `> ${msgs[Math.floor(Math.random() * msgs.length)]}`;
+            log.prepend(l);
+            if(log.children.length > 15) log.lastChild.remove();
+        }, 3000);
+    </script>
+</body>
+</html>

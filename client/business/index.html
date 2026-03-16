@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Command Center | Enterprise Sovereignty</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="command-center-container">
+        <header>
+            <h1>Business Command Center</h1>
+            <div style="text-align: right;">
+                <div style="font-size: 0.6rem; color: var(--corp-gold);">SYSTEM_VERSION: 2.1.0</div>
+                <div id="system-clock" style="font-size: 1.2rem; font-weight: 300;">20:25:42 UTC</div>
+            </div>
+        </header>
+
+        <aside class="sidebar">
+            <div>
+                <div class="panel-title">Model_Orchestration</div>
+                <div class="hunyuan-status">
+                    <div class="status-label">Active_Model</div>
+                    <div class="status-value">Hunyuan_Enterprise_v3</div>
+                </div>
+                <div class="hunyuan-status">
+                    <div class="status-label">Token_Flux</div>
+                    <div class="status-value" id="token-flux">14,282 / sec</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel-title">Operational_Directives</div>
+                <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.8;">
+                    > MAXIMIZE_SOVEREIGNTY<br>
+                    > OPTIMIZE_INTENT_CAPITAL<br>
+                    > STABILIZE_SOCIAL_LEDGER<br>
+                    > DEPLOY_HUNYUAN_SWARM
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-visual">
+            <div class="panel-title" style="padding: 1.5rem 1.5rem 0 1.5rem;">Global_Market_Consciousness <span>LIVE</span></div>
+            <canvas id="chart-canvas"></canvas>
+            <div class="real-time-feed" id="event-feed">
+                > INITIALIZING COMMAND CENTER... DONE<br>
+                > SYNCING WITH HUNYUAN_API... SUCCESS
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="panel-title">Market_Intelligence</div>
+            <div class="market-intel">
+                <div class="intel-row"><span>Social Sentiment</span><span class="intel-val">POSITIVE</span></div>
+                <div class="intel-row"><span>Sovereign Risk</span><span class="intel-val">NEGIGIBLE</span></div>
+                <div class="intel-row"><span>Compute Velocity</span><span class="intel-val">94.2%</span></div>
+                <div class="intel-row"><span>Wealth_Delta</span><span class="intel-val">+2.4 ETH</span></div>
+            </div>
+            
+            <div style="margin-top: auto;">
+                <div class="panel-title">Security_Nexus</div>
+                <div style="font-size: 0.6rem; color: #ff3e3e;">[ LOCKDOWN: READY ]</div>
+            </div>
+        </aside>
+
+        <footer>
+            <span>© 2026 BUSINESS COMMAND CENTER // HUNYUAN AI DIVISION</span>
+            <span>PLATINUM GLOBAL ENTERPRISE // LORDWILSON ARCHITECTURE</span>
+        </footer>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
