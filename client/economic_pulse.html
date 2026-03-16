@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Economic Pulse HUD | Sovereign Finance</title>
+    <style>
+        body { margin: 0; background: #050505; color: #d4af37; font-family: 'Space Grotesk', sans-serif; overflow: hidden; }
+        .hud-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 40px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        .stat-card {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+        .stat-value { font-size: 3rem; font-weight: bold; margin: 10px 0; }
+        .stat-label { text-transform: uppercase; letter-spacing: 3px; font-size: 0.8rem; opacity: 0.7; }
+        .pulse-wave {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 200px;
+            background: linear-gradient(transparent, rgba(212, 175, 55, 0.1));
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { opacity: 0.2; transform: scaleY(0.8); }
+            to { opacity: 0.5; transform: scaleY(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="hud-container">
+        <div class="stat-card">
+            <div class="stat-label">Sovereign_Liquidity (USDC)</div>
+            <div class="stat-value" id="usdc-val">$55,000.00</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Neural_Assets (BTC)</div>
+            <div class="stat-value" id="btc-val">0.420</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Swarm_Soul_Energy</div>
+            <div class="stat-value" id="soul-val">94.2%</div>
+        </div>
+    </div>
+    <div class="pulse-wave"></div>
+
+    <script>
+        // Simulated real-time volatility
+        setInterval(() => {
+            document.getElementById('soul-val').innerText = (90 + Math.random() * 10).toFixed(1) + "%";
+            const usdc = parseFloat(document.getElementById('usdc-val').innerText.replace('$', '').replace(',', ''));
+            const newVal = usdc + (Math.random() - 0.5) * 10;
+            document.getElementById('usdc-val').innerText = "$" + newVal.toLocaleString(undefined, {minimumFractionDigits: 2});
+        }, 1000);
+    </script>
+</body>
+</html>

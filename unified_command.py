@@ -8,6 +8,8 @@ from core.meta_reasoner import MetaReasoner
 from core.meta_learning import MetaLearningNode
 from core.scaling_engine import ScalingEngine
 from core.quantum_gateway import QuantumGateway
+from core.wallet_agent import WalletAgent
+from core.procurement_node import ProcurementNode
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -24,6 +26,8 @@ class UnifiedSovereignCLI:
         self.evolution = MetaLearningNode()
         self.scaler = ScalingEngine()
         self.gateway = QuantumGateway()
+        self.wallet = WalletAgent(self.qai)
+        self.procurement = ProcurementNode(self.wallet)
 
     def run(self):
         print("\n" + "💎"*20)
@@ -79,6 +83,16 @@ class UnifiedSovereignCLI:
                 print("-" * 30)
                 for log in self.verifier.security_logs:
                     print(f"ID: {log['handoff_id']} | STATUS: {log['status']} | {log['reason']}")
+            elif cmd == "wallet --status":
+                status = self.wallet.get_status()
+                print(f"\n💰 SOVEREIGN WALLET STATUS")
+                print("-" * 30)
+                for cur, bal in status["balances"].items():
+                    print(f"  {cur}: {bal}")
+            elif cmd == "procure --auto":
+                success = self.procurement.evaluate_and_procure({"compute_load": 0.9})
+                if success: print("🛒 AUTONOMOUS PROCUREMENT: SUCCESS")
+                else: print("🛒 AUTONOMOUS PROCUREMENT: STABLE")
             elif cmd == "status":
                 print("🧠 Engine: BitNet + Qwen2.5-3B (1-bit Optimized)")
                 print("🧮 Memory: Context 7 Semantic Window (SQLite)")
