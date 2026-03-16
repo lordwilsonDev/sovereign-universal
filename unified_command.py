@@ -1,6 +1,8 @@
 from core.sovereign_meta import SovereignDefense, CulturalContextEngine
 from core.predator_fuel import PredatorFuel
 from core.quantum_ai_orchestrator import QuantumAIOrchestrator
+from core.bitnet_engine import BitNetEngine
+from core.context7_memory import Context7Memory
 from core.agent_handoff import HandoffProtocol
 from core.verifier_agent import VerifierAgent
 from core.structured_logger import StructuredLogger
