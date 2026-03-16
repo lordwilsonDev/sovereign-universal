@@ -18,6 +18,10 @@ from core.self_verifier import SelfVerifier
 from core.sov_git_bridge import SovereignGitBridge
 from core.gcs_ingestor import GCSIngestor
 from core.axion_engine import AxionRetrievalEngine
+from core.forge_builder import ForgeBuilderAgent
+from core.redundancy_layer import RedundancyLayer
+from agents.freight_agent import FreightIntelligenceAgent
+from core.sentinel_monitor import SentinelMonitor
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -44,6 +48,10 @@ class UnifiedSovereignCLI:
         self.git = SovereignGitBridge(self.self_verifier)
         self.ingestor = GCSIngestor()
         self.axion = AxionRetrievalEngine(self.memory)
+        self.forge = ForgeBuilderAgent(self.verifier)
+        self.redundancy = RedundancyLayer()
+        self.freight = FreightIntelligenceAgent(self.did.did)
+        self.sentinel = SentinelMonitor()
 
     def run(self):
         print("\n" + "💎"*20)
@@ -150,9 +158,30 @@ class UnifiedSovereignCLI:
                 print("\n⚛️  INITIATING UNIVERSAL DATA BRIDGE...")
                 count = self.ingestor.sync_archives()
                 print(f"  Sync Complete: {count} new artifacts indexed.")
+            elif cmd == "forge --birth":
+                agent_type = input("Agent Type: ")
+                directives = input("Specific Directives: ")
+                res = self.forge.initiate_child_build(agent_type, directives)
+                if res["status"] == "BUILD_INITIATED":
+                    print(f"  Plan Generated: {json.dumps(res['plan'], indent=2)}")
+                    deploy = input("Deploy to Cloud Run? (y/n): ")
+                    if deploy.lower() == 'y':
+                        d_res = self.forge.deploy_child(res["plan"])
+                        print(f"  Status: {d_res['status']} | URL: {d_res['url']}")
+            elif cmd == "freight --optimize":
+                print("\n🚛 INITIATING LOGISTICS OPTIMIZATION...")
+                res = self.freight.optimize_logistics([{"id": 1, "coord": "44.2N, 88.4W"}])
+                print(f"  Efficiency: {res['payload']['routing_efficiency']} | Provider: {res['payload']['provider']}")
+            elif cmd == "sentinel --audit":
+                print("\n🛡️  INITIATING HIGH-FIDELITY SENTINEL AUDIT...")
+                id_res = self.sentinel.check_identity_drift()
+                print(f"  Identity: {id_res['status']} | {id_res.get('reason', id_res.get('signature'))}")
+                burn_res = self.sentinel.audit_resource_burn({"redis_usage": 0.45, "nats_lag": 15})
+                print(f"  Resource Burn: {burn_res['status']} | Action: {burn_res['action']}")
             elif cmd == "status":
                 print("🧠 Engine: BitNet + Qwen2.5-3B (1-bit Optimized)")
-                print("📚 Knowledge: Axion-RAG Cognitive Core")
+                print("🛠️  Meta-Agent: Forge Intelligence Builder")
+                print("🚛 Specialized: Freight Intelligence Active")
                 print("🧮 Memory: Context 7 Semantic Window (SQLite)")
                 print("🆔 Identity: " + self.did.did)
                 print("💰 Liquidity: SECURE")

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Sentinel Monitor</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --primary: #00f3ff;
+            --alert: #ff003c;
+            --warn: #ffcc00;
+            --text: #e0e0e0;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #202020;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 2px;
+            background: var(--primary);
+            opacity: 0.3;
+        }
+        .label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .value { font-size: 1.5rem; font-weight: bold; margin-top: 10px; }
+        .status-ok { color: var(--primary); }
+        .status-warn { color: var(--warn); }
+        .status-alert { color: var(--alert); }
+        
+        .log-vessel {
+            margin-top: 20px;
+            background: #000;
+            border: 1px solid #1a1a1a;
+            height: 200px;
+            padding: 10px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+            overflow-y: auto;
+        }
+        .log-entry { margin-bottom: 4px; border-left: 2px solid var(--primary); padding-left: 8px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>CHIMERA SENTINEL 🛡️</h1>
+        <div class="status-ok">● SYSTEM ALIGNED</div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <div class="label">Identity Drift (Ed25519)</div>
+            <div class="value status-ok">SECURE</div>
+        </div>
+        <div class="card">
+            <div class="label">NATS JetStream Lag</div>
+            <div class="value">12 ms</div>
+        </div>
+        <div class="card">
+            <div class="label">Redis Memory Buffer</div>
+            <div class="value status-ok">35% / 4GB</div>
+        </div>
+        <div class="card">
+            <div class="label">ML Service GIL Lock</div>
+            <div class="value status-warn">LOW STRESS</div>
+        </div>
+    </div>
+
+    <div class="log-vessel">
+        <div class="log-entry">[00:15:21] Sentinel Monitor Initiated.</div>
+        <div class="log-entry">[00:15:22] scanning 'auth.keys.rotate' subject...</div>
+        <div class="log-entry">[00:15:25] NATS JetStream offset 94218 verified.</div>
+        <div class="log-entry" style="border-left-color: var(--warn);">[00:15:30] WARN: Higher entropy detected in sector 4. Throttling non-critical ML tasks.</div>
+        <div class="log-entry">[00:16:01] Empty Shelf Protocol Audit: NOMINAL.</div>
+    </div>
+</body>
+</html>

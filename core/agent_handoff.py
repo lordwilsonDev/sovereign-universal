@@ -28,8 +28,21 @@ class HandoffProtocol:
         return handoff
 
     def verify_provenance(self, handoff):
-        """Verifies if the handoff came from a valid node in the chain."""
-        # Simplified proof check
+        """
+        Verifies if the handoff came from a valid node in the chain.
+        Includes Phase 21 Shadow Protection logic to detect Mirror Maneuvers.
+        """
+        # 1. Signature Check (Simulated)
+        if "signature" in handoff and handoff["signature"] != "VALID":
+            print("🚨 SHADOW ALERT: Invalid signature in handoff chain.")
+            return False
+
+        # 2. Shadow Offset Check (NATS JetStream Protection)
+        # In a real NATS environment, we compare the sequence number with our local state.
+        if "nats_offset" in handoff and handoff["nats_offset"] < len(self.handoff_chain):
+            print("🚨 SHADOW ALERT: Detected duplicate or stale NATS offset. Mirror Maneuver blocked.")
+            return False
+
         return len(handoff["provenance"]) >= 0
 
 if __name__ == "__main__":
