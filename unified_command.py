@@ -16,6 +16,8 @@ from core.federated_sync import FederatedSync
 from core.meta_code_agent import MetaCodeAgent
 from core.self_verifier import SelfVerifier
 from core.sov_git_bridge import SovereignGitBridge
+from core.gcs_ingestor import GCSIngestor
+from core.axion_engine import AxionRetrievalEngine
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -40,6 +42,8 @@ class UnifiedSovereignCLI:
         self.code_agent = MetaCodeAgent(self.bitnet)
         self.self_verifier = SelfVerifier()
         self.git = SovereignGitBridge(self.self_verifier)
+        self.ingestor = GCSIngestor()
+        self.axion = AxionRetrievalEngine(self.memory)
 
     def run(self):
         print("\n" + "💎"*20)
@@ -133,8 +137,22 @@ class UnifiedSovereignCLI:
                 print("\n🌲 META-COMMIT HANDSHAKE...")
                 res = self.git.commit_optimization("core/bitnet_engine.py", "+ fast_weights()", "Latency spike resolution")
                 print(f"  Hash: {res['commit']['hash']} | Sig: {res['commit']['sig']}")
+            elif cmd == "rag --query":
+                prompt = input("Axion Query: ")
+                res = self.axion.query(prompt)
+                print(f"\n⚛️  AXION RESPONSE")
+                print("-" * 30)
+                print(res["response"])
+                print("\n📚 SOURCES")
+                for s in res["sources"]:
+                    print(f"  - {s['source']} (Score: {s['score']})")
+            elif cmd == "rag --ingest":
+                print("\n⚛️  INITIATING UNIVERSAL DATA BRIDGE...")
+                count = self.ingestor.sync_archives()
+                print(f"  Sync Complete: {count} new artifacts indexed.")
             elif cmd == "status":
                 print("🧠 Engine: BitNet + Qwen2.5-3B (1-bit Optimized)")
+                print("📚 Knowledge: Axion-RAG Cognitive Core")
                 print("🧮 Memory: Context 7 Semantic Window (SQLite)")
                 print("🆔 Identity: " + self.did.did)
                 print("💰 Liquidity: SECURE")
