@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swarm Neural HUD | 3D Collective Consciousness</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Space Grotesk', sans-serif; }
+        #canvas-container { width: 100vw; height: 100vh; }
+        .hud-overlay {
+            position: absolute;
+            top: 2rem; left: 2rem;
+            color: #00f2ff;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="hud-overlay">
+        <h1>NEURAL_SWARM_VISUALIZER</h1>
+        <div id="status-line">NODE_COHESION: 100%</div>
+    </div>
+    <div id="canvas-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Create Neural Mesh
+        const geometry = new THREE.IcosahedronGeometry(2, 2);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00f2ff, wireframe: true, transparent: true, opacity: 0.3 });
+        const sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        // Particles for Nodes
+        const particlesGeom = new THREE.BufferGeometry();
+        const particlesCount = 13; // Our 13 nodes
+        const posArray = new Float32Array(particlesCount * 3);
+        
+        for(let i=0; i<particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 5;
+        }
+        
+        particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMat = new THREE.PointsMaterial({ size: 0.1, color: 0xd4af37 });
+        const particlesMesh = new THREE.Points(particlesGeom, particlesMat);
+        scene.add(particlesMesh);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            sphere.rotation.y += 0.005;
+            sphere.rotation.x += 0.002;
+            particlesMesh.rotation.y -= 0.003;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

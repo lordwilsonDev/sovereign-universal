@@ -1,11 +1,13 @@
 from core.sovereign_meta import SovereignDefense, CulturalContextEngine
 from core.predator_fuel import PredatorFuel
 from core.quantum_ai_orchestrator import QuantumAIOrchestrator
-from core.bitnet_engine import BitNetEngine
-from core.context7_memory import Context7Memory
 from core.agent_handoff import HandoffProtocol
 from core.verifier_agent import VerifierAgent
 from core.structured_logger import StructuredLogger
+from core.meta_reasoner import MetaReasoner
+from core.meta_learning import MetaLearningNode
+from core.scaling_engine import ScalingEngine
+from core.quantum_gateway import QuantumGateway
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -18,6 +20,10 @@ class UnifiedSovereignCLI:
         self.swarm = HandoffProtocol()
         self.verifier = VerifierAgent()
         self.logger = StructuredLogger()
+        self.meta = MetaReasoner(self.bitnet, self.verifier)
+        self.evolution = MetaLearningNode()
+        self.scaler = ScalingEngine()
+        self.gateway = QuantumGateway()
 
     def run(self):
         print("\n" + "💎"*20)
@@ -40,6 +46,20 @@ class UnifiedSovereignCLI:
                 prompt = input("Enter prompt for BitNet: ")
                 response = self.bitnet.process_with_context(prompt)
                 print(f"🧠 BitNet Reasoning: {response}")
+            elif cmd == "ask --meta":
+                prompt = input("Enter prompt for Meta-Reasoning: ")
+                response = self.meta.think_and_correct(prompt)
+                print(f"🌌 Meta-Refined Thought: {response}")
+            elif cmd == "flip --singularity":
+                self.logger.log("CRITICAL", "INITIATING SINGULARITY FLIP: WAR ROOM MODE ACTIVE", node="Hub")
+                objective = input("Enter Singular Objective: ")
+                # Parallel execution simulation
+                self.scaler.spawn_instance("Reasoner", location="cloud")
+                self.logger.log("INFO", f"Objective Dispatched to 13-Node Collective: {objective}")
+                print("⚡ SWARM ENTANGLEMENT: PARALLEL_EXECUTION_STABILIZED")
+            elif cmd == "evolve --swarm":
+                print(f"🧬 Analysis: {self.evolution.analyze_swarm_health()}")
+                print(f"🚀 Directive: {self.evolution.suggest_optimization()}")
             elif cmd == "list --memory":
                 context = self.memory.get_active_context()
                 print("🧮 Context 7 Memory Window:")
