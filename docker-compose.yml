@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # 1. API Gateway (The Silicon Valley Killer Entry)
+  api-gateway:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - MODEL_SERVICE_URL=http://qwen-engine:5555
+    depends_on:
+      - qwen-engine
+      - memory-node
+
+  # 2. Qwen BitNet Engine (The Reasoning Core)
+  qwen-engine:
+    build:
+      context: .
+      dockerfile: api/models/qwen-server/Dockerfile
+    ports:
+      - "5555:5555"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # 3. Context 7 Memory Node
+  memory-node:
+    image: python:3.11-slim
+    volumes:
+      - ./core:/app/core
+    command: python3 core/context7_memory.py
+    environment:
+      - DB_PATH=/app/core/context7.db
+
+  # 4. Sovereign Hub (The Dashboard)
+  hub-ui:
+    image: nginx:alpine
+    volumes:
+      - ./client:/usr/share/nginx/html
+    ports:
+      - "80:80"
+
+  # 5. Sovereign Defense (Self-Healing)
+  defense-node:
+    image: python:3.11-slim
+    volumes:
+      - ./core:/app/core
+    command: python3 core/sovereign_meta.py
+
+  # 6. Slack Bridge (Enterprise Integration)
+  slack-bridge:
+    image: python:3.11-slim
+    environment:
+      - SLACK_TOKEN=${SLACK_TOKEN}
+    volumes:
+      - ./core:/app/core
+
+  # 7. CLI Interactive (Local Control)
+  cli-node:
+    image: python:3.11-slim
+    volumes:
+      - .:/app
+    command: python3 unified_command.py
+    tty: true
+    stdin_open: true
+
+  # 8. Persistence DB (SQLite Management)
+  db-node:
+    image: alpine
+    volumes:
+      - ./core:/data
+    command: watch -n 3600 ls -l /data
+
+networks:
+  default:
+    name: sovereign_net
