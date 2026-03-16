@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Global Diplomacy HUD | Sovereign Federation</title>
+    <style>
+        body { margin: 0; background: #000; color: #00ffaa; font-family: 'Space Grotesk', sans-serif; overflow: hidden; }
+        #canvas-container { width: 100vw; height: 100vh; }
+        .overlay {
+            position: absolute;
+            top: 2rem; left: 2rem;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+        }
+        .federation-list {
+            position: absolute;
+            top: 100px; right: 2rem;
+            width: 300px;
+            background: rgba(0, 255, 170, 0.05);
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .node-item { border-bottom: 1px solid rgba(0, 255, 170, 0.1); padding: 5px 0; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="overlay">
+        <h1>GLOBAL_DIPLOMACY_NETWORK</h1>
+        <div id="status">ACTIVE_FEDERATIONS: 1</div>
+    </div>
+    <div class="federation-list" id="fed-list">
+        <div class="node-item">LOCAL_NODE: ONLINE</div>
+        <div class="node-item">ALPHA_RELAY: ENTANGLED</div>
+    </div>
+    <div id="canvas-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        // Planetary Wireframe
+        const geometry = new THREE.SphereGeometry(2, 32, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ffaa, wireframe: true, transparent: true, opacity: 0.1 });
+        const earth = new THREE.Mesh(geometry, material);
+        scene.add(earth);
+
+        // Connection Lines
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffaa });
+        const points = [];
+        points.push( new THREE.Vector3( -2, 0, 0 ) );
+        points.push( new THREE.Vector3( 2, 0, 0 ) );
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
+        const line = new THREE.Line( lineGeometry, lineMaterial );
+        scene.add(line);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            earth.rotation.y += 0.001;
+            line.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

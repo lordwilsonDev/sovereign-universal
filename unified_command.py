@@ -10,6 +10,9 @@ from core.scaling_engine import ScalingEngine
 from core.quantum_gateway import QuantumGateway
 from core.wallet_agent import WalletAgent
 from core.procurement_node import ProcurementNode
+from core.sovereign_did import SovereignDID
+from core.diplomacy_agent import DiplomacyAgent
+from core.federated_sync import FederatedSync
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -28,6 +31,9 @@ class UnifiedSovereignCLI:
         self.gateway = QuantumGateway()
         self.wallet = WalletAgent(self.qai)
         self.procurement = ProcurementNode(self.wallet)
+        self.did = SovereignDID(self.qai.soul_sig if hasattr(self.qai, "soul_sig") else "UNKNOWN_SOUL")
+        self.diplomacy = DiplomacyAgent(self.did)
+        self.federation = FederatedSync(self.diplomacy)
 
     def run(self):
         print("\n" + "💎"*20)
@@ -93,6 +99,22 @@ class UnifiedSovereignCLI:
                 success = self.procurement.evaluate_and_procure({"compute_load": 0.9})
                 if success: print("🛒 AUTONOMOUS PROCUREMENT: SUCCESS")
                 else: print("🛒 AUTONOMOUS PROCUREMENT: STABLE")
+            elif cmd == "sync --federate":
+                peer_did = input("Peer DID: ")
+                peer_endpoint = input("Peer Endpoint: ")
+                res = self.federation.initiate_handshake(peer_did, peer_endpoint)
+                if res["status"] == "SUCCESS":
+                    print(f"🌍 FEDERATION ENTANGLED: {res['federation_id']}")
+                else:
+                    print(f"❌ FEDERATION REFUSED: {res['reason']}")
+            elif cmd == "list --peers":
+                print("\n🌐 ACTIVE FEDERATIONS")
+                print("-" * 30)
+                for did, data in self.federation.active_federations.items():
+                    print(f"  {did} | {data['status']} | {data['endpoint']}")
+            elif cmd == "show --did":
+                print(f"\n🆔 SOVEREIGN DID: {self.did.did}")
+                print(f"📄 DOCUMENT: {json.dumps(self.did.resolve(), indent=2)}")
             elif cmd == "status":
                 print("🧠 Engine: BitNet + Qwen2.5-3B (1-bit Optimized)")
                 print("🧮 Memory: Context 7 Semantic Window (SQLite)")
