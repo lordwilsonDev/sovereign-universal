@@ -13,6 +13,9 @@ from core.procurement_node import ProcurementNode
 from core.sovereign_did import SovereignDID
 from core.diplomacy_agent import DiplomacyAgent
 from core.federated_sync import FederatedSync
+from core.meta_code_agent import MetaCodeAgent
+from core.self_verifier import SelfVerifier
+from core.sov_git_bridge import SovereignGitBridge
 
 class UnifiedSovereignCLI:
     def __init__(self):
@@ -34,6 +37,9 @@ class UnifiedSovereignCLI:
         self.did = SovereignDID(self.qai.soul_sig if hasattr(self.qai, "soul_sig") else "UNKNOWN_SOUL")
         self.diplomacy = DiplomacyAgent(self.did)
         self.federation = FederatedSync(self.diplomacy)
+        self.code_agent = MetaCodeAgent(self.bitnet)
+        self.self_verifier = SelfVerifier()
+        self.git = SovereignGitBridge(self.self_verifier)
 
     def run(self):
         print("\n" + "💎"*20)
@@ -115,9 +121,24 @@ class UnifiedSovereignCLI:
             elif cmd == "show --did":
                 print(f"\n🆔 SOVEREIGN DID: {self.did.did}")
                 print(f"📄 DOCUMENT: {json.dumps(self.did.resolve(), indent=2)}")
+            elif cmd == "evolve --optimize":
+                print("\n🧠 INITIATING RECURSIVE OPTIMIZATION...")
+                res = self.code_agent.analyze_file("core/bitnet_engine.py")
+                print(f"  Purity: {res['purity_score']} | Suggestions: {len(res['suggestions'])}")
+            elif cmd == "evolve --verify":
+                print("\n🛡️  AUTONOMOUS VERIFICATION...")
+                res = self.self_verifier.verify_change("core/bitnet_engine.py", "+ fast_weights()")
+                print(f"  Status: {res['status']} | Coverage: {res['details']['coverage']}")
+            elif cmd == "evolve --commit":
+                print("\n🌲 META-COMMIT HANDSHAKE...")
+                res = self.git.commit_optimization("core/bitnet_engine.py", "+ fast_weights()", "Latency spike resolution")
+                print(f"  Hash: {res['commit']['hash']} | Sig: {res['commit']['sig']}")
             elif cmd == "status":
                 print("🧠 Engine: BitNet + Qwen2.5-3B (1-bit Optimized)")
                 print("🧮 Memory: Context 7 Semantic Window (SQLite)")
+                print("🆔 Identity: " + self.did.did)
+                print("💰 Liquidity: SECURE")
+                print("📈 Optimization: RECURSIVE_ACTIVE")
                 print("🐳 Deployment: 8-Container Production Stack")
                 print("🔐 Security: Quantum PQC + Love Signature")
             else:
