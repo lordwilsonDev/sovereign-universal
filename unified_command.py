@@ -1,3 +1,6 @@
+from core.sovereign_meta import SovereignDefense, CulturalContextEngine
+from core.predator_fuel import PredatorFuel
+from core.quantum_ai_orchestrator import QuantumAIOrchestrator
 from core.bitnet_engine import BitNetEngine
 from core.context7_memory import Context7Memory
 from core.agent_handoff import HandoffProtocol
@@ -42,6 +45,20 @@ class UnifiedSovereignCLI:
                 print("🧮 Context 7 Memory Window:")
                 for i, fragment in enumerate(context):
                     print(f"  [{i+1}] {fragment}")
+            elif cmd == "swarm --init":
+                target = input("Target Node: ")
+                payload = input("Payload: ")
+                self.logger.log("INFO", f"Initializing Swarm Handoff to {target}", node="Hub")
+                handoff = self.swarm.create_handoff("CLI_Node", target, payload)
+                if self.verifier.audit_handoff(handoff):
+                    self.logger.log("SUCCESS", f"Swarm Handoff Approved: {handoff['handoff_id']}")
+                else:
+                    self.logger.log("ERROR", "Swarm Handoff Refused by Verifier")
+            elif cmd == "audit --security":
+                print(f"\n🛡️  SECURITY AUDIT REPORT")
+                print("-" * 30)
+                for log in self.verifier.security_logs:
+                    print(f"ID: {log['handoff_id']} | STATUS: {log['status']} | {log['reason']}")
             elif cmd == "status":
                 print("🧠 Engine: BitNet + Qwen2.5-3B (1-bit Optimized)")
                 print("🧮 Memory: Context 7 Semantic Window (SQLite)")

@@ -56,6 +56,16 @@ class CulturalContextEngine:
     Bilingual Social Layer (Fox Valley Spanish Integration)
     Translates technical outputs into rhythmic, culturally relevant Spanish.
     """
+    def __init__(self, model_bridge=None):
+        self.model = model_bridge
+        self.fox_valley_map = {
+            "hello": "qué onda bro",
+            "working": "jale",
+            "cool": "chido",
+            "money": "feria",
+            "boss": "patrón"
+        }
+
     def translate(self, text):
         # Simulated rhythm-aware translation
         context_map = {
@@ -63,7 +73,10 @@ class CulturalContextEngine:
             "error": "Chale, algo tronó en el sistema.",
             "deploy": "Vámonos recio con el despliegue."
         }
-        return context_map.get(text.lower(), text)
+        words = text.lower().split()
+        translated = [self.fox_valley_map.get(w, w) for w in words]
+        base_translation = " ".join(translated)
+        return context_map.get(base_translation.lower(), base_translation)
 
 if __name__ == "__main__":
     sd = SovereignDefense()
