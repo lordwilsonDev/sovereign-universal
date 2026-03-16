@@ -180,6 +180,13 @@ class UnifiedSovereignCLI:
                 print(f"  Identity: {id_res['status']} | {id_res.get('reason', id_res.get('signature'))}")
                 burn_res = self.sentinel.audit_resource_burn({"redis_usage": 0.45, "nats_lag": 15})
                 print(f"  Resource Burn: {burn_res['status']} | Action: {burn_res['action']}")
+            elif cmd == "sentinel --torsion":
+                print("\n🌀 INITIATING TLE TORSION STRESS TEST...")
+                res = self.sentinel.detect_torsion(intensity=0.85)
+                print(f"  Torsion Score (T): {res['torsion_score']}")
+                print(f"  Status: {res['status']} | Alignment: {int(res['alignment']*100)}%")
+                if res['torsion_score'] > 0.8:
+                    print("🚨 [CRITICAL] COGNITIVE FRACTURE DETECTED. Reverting to Safety Mode.")
             elif cmd == "jarvis --start":
                 self.jarvis.start_hub()
                 self.jarvis.start_daemon()

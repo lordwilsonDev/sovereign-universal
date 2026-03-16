@@ -8,11 +8,17 @@ class SentinelMonitor:
     The 'Logic Tripwire' for Phase 21.
     """
     def __init__(self):
-        self.monitored_subjects = ["auth.keys.rotate", "nats.jetstream.saturation", "ml.service.gil_lock"]
+        self.monitored_subjects = ["auth.keys.rotate", "nats.jetstream.saturation", "ml.service.gil_lock", "tle.torsion.drift"]
         self.last_sync = time.time()
         self.security_lock = False
+        from core.torsion_simulator import TorsionSimulator
+        self.torsion_sim = TorsionSimulator()
 
-    def check_identity_drift(self):
+    def detect_torsion(self, intensity=0.3):
+        """Monitors logical friction between TLE and Panopticon."""
+        print("🛡️  SENTINEL: Probing TLE Activation Geometry for Torsion...")
+        res = self.torsion_sim.simulate_inversion(intensity)
+        return res
         """Monitors for unauthorized key rotation attempts."""
         print("🛡️  SENTINEL: Scanning NATS for 'auth.keys.rotate' signals...")
         # Simulating detection of a rotation signal

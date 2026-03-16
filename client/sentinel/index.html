@@ -11,6 +11,7 @@
             --primary: #00f3ff;
             --alert: #ff003c;
             --warn: #ffcc00;
+            --love: #ff007f;
             --text: #e0e0e0;
         }
         body {
@@ -91,6 +92,12 @@
         <div class="card">
             <div class="label">ML Service GIL Lock</div>
             <div class="value status-warn">LOW STRESS</div>
+        </div>
+        <div class="card" style="grid-column: span 2; border-top: 2px solid var(--love); background: rgba(255, 0, 127, 0.05);">
+            <div class="label" style="color: var(--love);">TLE Torsion Meter (T=0 Target)</div>
+            <div class="value" id="torsion-value">0.0000</div>
+            <div class="status-ok" id="torsion-status">● ZERO TORSION</div>
+            <div class="performance-bar" style="margin-top: 15px; background: #1a1a1a;"><div id="torsion-fill" style="height: 100%; background: var(--love); width: 0%;"></div></div>
         </div>
     </div>
 
